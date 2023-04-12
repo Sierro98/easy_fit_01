@@ -1,5 +1,6 @@
 package ies.infantaelena.easy_fit_01.views
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.widget.Toast
@@ -29,18 +30,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 import ies.infantaelena.easy_fit_01.LoginName
 import ies.infantaelena.easy_fit_01.LoginPassword
 import ies.infantaelena.easy_fit_01.checkLogin
 import ies.infantaelena.easy_fit_01.model.customTextSelectionColors
+
 
 //@Preview(showBackground = true, showSystemUi = true)
 //@Composable
 //fun SeePreview() {
 //    RegisterScreen()
 //}
+private lateinit var auth: FirebaseAuth
+
 @Composable
 fun RegisterScreen(navController: NavController) {
+    auth = FirebaseAuth.getInstance()
     var emailValue: String by rememberSaveable { mutableStateOf("") }
     var userValue: String by rememberSaveable { mutableStateOf("") }
     var passwordValue: String by rememberSaveable { mutableStateOf("") }
@@ -275,12 +281,16 @@ fun makeRegister(
     } else if (!password.equals(reppassword)) {
         Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
     } else {
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener {
-            if (it.isSuccessful){
-                Toast.makeText(context, "Registro Correcto", Toast.LENGTH_SHORT).show()
-            }else{
-                showAlert()
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Toast.makeText(context, "todo correcto", Toast.LENGTH_SHORT).show()
+
+                } else {
+                   showAlert()
+                }
             }
-        }
+
     }
-}
+    }
